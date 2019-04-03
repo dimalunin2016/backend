@@ -6,10 +6,12 @@ from web_app.models import User
 from web_app.token import generate_confirmation_token, confirm_token
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+from decorators import check_confirmed
 
 @app.route('/')
 @app.route('/index')
 @login_required
+@check_confirmed
 def index():
     user = {'username': 'Miguel'}
     posts = [
@@ -64,7 +66,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        return redirect(url_for('login'))
+        return redirect(url_for('unconfirmed'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/confirm/<token>')
@@ -84,3 +86,11 @@ def confirm_email(token):
         db.session.commit()
         flash('You have confirmed your account. Thanks!', 'success')
     return redirect(url_for('index'))
+
+@app.route('/unconfirmed')
+@login_required
+def unconfirmed():
+    if current_user.confirmed:
+        return redirect('index')
+    flash('Please confirm your account!', 'warning')
+    return render_template('unconfirmed.html')
