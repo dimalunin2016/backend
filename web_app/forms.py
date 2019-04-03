@@ -20,9 +20,7 @@ class RegistrationForm(FlaskForm):
     confirmed = False
 
     def validate_username(self, username):
-        print("DDDDD")
         user = User.query.filter_by(username=username.data).first()
-        print("GHJKLLKLL")
         if user is not None:
             raise ValidationError('Please use a different username.')
 

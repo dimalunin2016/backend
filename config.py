@@ -16,9 +16,9 @@ class Config(object):
     # gmail authentication
     MAIL_USERNAME = os.environ['APP_MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['APP_MAIL_PASSWORD']
-    
+
     # rabbitmq init
-    RABBITMQ_HOST = 'localhost'
+    RABBITMQ_HOST = 'krolik'
 
     # mail accounts
     MAIL_DEFAULT_SENDER = 'dimalynin@gmail.com'
