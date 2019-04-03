@@ -17,6 +17,9 @@ class Config(object):
     MAIL_USERNAME = os.environ['APP_MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['APP_MAIL_PASSWORD']
     
+    # rabbitmq init
+    RABBITMQ_HOST = 'localhost'
+
     # mail accounts
     MAIL_DEFAULT_SENDER = 'dimalynin@gmail.com'
 

@@ -7,6 +7,9 @@ from web_app.token import generate_confirmation_token, confirm_token
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from decorators import check_confirmed
+from pika_init import *
+
+_DELIVERY_MODE_PERSISTENT = 2
 
 @app.route('/')
 @app.route('/index')
@@ -58,9 +61,20 @@ def register():
 
         token = generate_confirmation_token(user.email)
         confirm_url = url_for('confirm_email', token=token, _external=True)
-        html = render_template('activate.html', confirm_url=confirm_url)
-        subject = "Please confirm your email"
-        send_email(user.email, subject, html)
+        # html = render_template('activate.html', confirm_url=confirm_url)
+        # subject = "Please confirm your email"
+        # send_email(user.email, subject, html)
+        message_body = user.email + ';' + confirm_url
+        q = get_welcome_queue()
+        q.basic_publish(
+            exchange = '',
+            routing_key = 'email-queue',
+            body = message_body,
+            properties = pika.BasicProperties(
+                delivery_mode = _DELIVERY_MODE_PERSISTENT
+            )
+        )
+
         flash('A confirmation email has been sent via email.')
 
         db.session.add(user)
