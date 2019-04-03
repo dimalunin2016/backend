@@ -51,18 +51,19 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        print("HEREEEEEEEEEEEEEEEEEEEEEE")
-        user = User(username=form.username.data, email=form.email.data, confirmed = False)
+        user = User(username=form.username.data, email=form.email.data, confirmed=False)
         user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
+
         token = generate_confirmation_token(user.email)
-        confirm_url = url_for('user.confirm_email', token=token, _external=True)
+        confirm_url = url_for('confirm_email', token=token, _external=True)
         html = render_template('activate.html', confirm_url=confirm_url)
         subject = "Please confirm your email"
         send_email(user.email, subject, html)
-
         flash('A confirmation email has been sent via email.')
+
+        db.session.add(user)
+        db.session.commit()
+
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -73,6 +74,7 @@ def confirm_email(token):
         email = confirm_token(token)
     except:
         flash('The confirmation link is invalid or has expired.', 'danger')
+    
     user = User.query.filter_by(email=email).first_or_404()
     if user.confirmed:
         flash('Account already confirmed. Please login.', 'success')
