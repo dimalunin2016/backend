@@ -61,9 +61,6 @@ def register():
 
         token = generate_confirmation_token(user.email)
         confirm_url = url_for('confirm_email', token=token, _external=True)
-        # html = render_template('activate.html', confirm_url=confirm_url)
-        # subject = "Please confirm your email"
-        # send_email(user.email, subject, html)
         message_body = user.email + ';' + confirm_url
         q = get_welcome_queue()
         q.basic_publish(
